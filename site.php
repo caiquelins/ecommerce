@@ -1,12 +1,14 @@
-<?php
+<?php 
 
 use \Hcode\Page;
 use \Hcode\Model\Product;
 use \Hcode\Model\Category;
 use \Hcode\Model\Cart;
+use \Hcode\Model\Address;
+use \Hcode\Model\User;
 
 $app->get('/', function() {
-    
+
 	$products = Product::listAll();
 
 	$page = new Page();
@@ -17,10 +19,10 @@ $app->get('/', function() {
 
 });
 
-$app->get("/categories/:idcategory", function($idcategory) {
-	
+$app->get("/categories/:idcategory", function($idcategory){
+
 	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
-	
+
 	$category = new Category();
 
 	$category->get((int)$idcategory);
@@ -46,7 +48,7 @@ $app->get("/categories/:idcategory", function($idcategory) {
 
 });
 
-$app->get("/products/:desurl", function($desurl) {
+$app->get("/products/:desurl", function($desurl){
 
 	$product = new Product();
 
@@ -59,10 +61,9 @@ $app->get("/products/:desurl", function($desurl) {
 		'categories'=>$product->getCategories()
 	]);
 
-
 });
 
-$app->get("/cart", function() {
+$app->get("/cart", function(){
 
 	$cart = Cart::getFromSession();
 
@@ -86,11 +87,11 @@ $app->get("/cart/:idproduct/add", function($idproduct){
 
 	$qtd = (isset($_GET['qtd'])) ? (int)$_GET['qtd'] : 1;
 
-	for ($i = 0; $i < $qtd; $i++) { 
+	for ($i = 0; $i < $qtd; $i++) {
 		
 		$cart->addProduct($product);
 
-	}	
+	}
 
 	header("Location: /cart");
 	exit;
@@ -138,5 +139,59 @@ $app->post("/cart/freight", function(){
 
 });
 
+$app->get("/checkout", function(){
 
-?>
+	User::verifyLogin(false);
+
+	$cart = Cart::getFromSession();
+
+	$address = new Address();
+
+	$page = new Page();
+
+	$page->setTpl("checkout", [
+		'cart'=>$cart->getValues(),
+		'address'=>$address->getValues()
+	]);
+
+});
+
+$app->get("/login", function(){
+
+	$page = new Page();
+
+	$page->setTpl("login", [
+		'error'=>User::getError()
+	]);
+
+});
+
+$app->post("/login", function(){
+
+	try {
+
+		User::login($_POST['login'], $_POST['password']);
+
+	} catch(Exception $e) {
+
+		User::setError($e->getMessage());
+
+	}
+
+	header("Location: /checkout");
+	
+	exit;
+
+});
+
+$app->get("/logout", function(){
+
+	User::logout();
+
+	header("Location: /login");
+
+	exit;
+
+});
+
+ ?>
