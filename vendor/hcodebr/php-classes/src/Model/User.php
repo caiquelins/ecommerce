@@ -12,6 +12,7 @@ class User extends Model {
 	const SECRET = "HcodePhp7_Secret";
 	const ERROR = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
+	const SUCCESS = "UserSucesss";
 
 	public static function getFromSession()
 	{
@@ -332,6 +333,31 @@ class User extends Model {
 
 	}
 
+	public static function setSuccess($msg)
+	{
+
+		$_SESSION[User::SUCCESS] = $msg;
+
+	}
+
+	public static function getSuccess()
+	{
+
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+
+		User::clearSuccess();
+
+		return $msg;
+
+	}
+
+	public static function clearSuccess()
+	{
+
+		$_SESSION[User::SUCCESS] = NULL;
+
+	}
+
 	public static function setErrorRegister($msg)
 	{
 
@@ -341,6 +367,7 @@ class User extends Model {
 
 	public static function getErrorRegister()
 	{
+
 		$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
 
 		User::clearErrorRegister();
@@ -360,7 +387,7 @@ class User extends Model {
 	{
 
 		$sql = new Sql();
-		
+
 		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
 			':deslogin'=>$login
 		]);
@@ -375,9 +402,9 @@ class User extends Model {
 		return password_hash($password, PASSWORD_DEFAULT, [
 			'cost'=>12
 		]);
-		
+
 	}
 
 }
 
- ?>
+?>
