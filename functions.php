@@ -50,5 +50,25 @@ function getCartVlSubTotal()
 
 }
 
+function formatAddressUtf8($desaddress)
+{
+
+	return utf8_encode($desaddress);
+
+}
+
+function formatDistrictUtf8($desdistrict)
+{
+
+	return utf8_encode($desdistrict);
+
+}
+
+function formatCityUtf8($descity)
+{
+
+	return utf8_encode($descity);
+
+}
 
 ?>
